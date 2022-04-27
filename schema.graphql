@@ -1,0 +1,47 @@
+
+type Token @entity {
+  # token address
+  id: ID!
+  # token symbol
+  symbol: String!
+  # token name
+  name: String!
+  # token decimals
+  decimals: BigInt!
+}
+
+type Pool @entity {
+  # pool address
+  id: ID!
+  # current tick
+  tick: BigInt!
+  # fee amount
+  feeTier: BigInt!
+  # current price tracker
+  sqrtPrice: BigInt!
+  # in range liquidity
+  liquidity: BigInt!
+  # token0
+  token0: Token!
+  # token1
+  token1: Token!
+}
+
+type Tick @entity {
+  # format: <pool address>#<tick index>
+  id: ID!
+  # pool address
+  poolAddress: String!
+  # tick index
+  tickIdx: BigInt!
+  # pointer to pool
+  pool: Pool!
+  # total liquidity pool has as tick lower or upper
+  liquidityGross: BigInt!
+  # how much liquidity changes when tick crossed
+  liquidityNet: BigInt!
+  # calculated price of token0 of tick within this pool - constant
+  price0: BigDecimal!
+  # calculated price of token1 of tick within this pool - constant
+  price1: BigDecimal!
+}

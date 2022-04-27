@@ -1,0 +1,16 @@
+{
+  "name": "Shrinkeduniswapv3",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen --output-dir src/types/",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ devopslondon2021/Shrinkeduniswapv3",
+    "create-local": "graph create --node http://localhost:8020/ devopslondon2021/Shrinkeduniswapv3",
+    "remove-local": "graph remove --node http://localhost:8020/ devopslondon2021/Shrinkeduniswapv3",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 devopslondon2021/Shrinkeduniswapv3"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.25.0",
+    "@graphprotocol/graph-ts": "^0.20.0"
+  }
+}
