@@ -8,6 +8,10 @@ type Token @entity {
   name: String!
   # token decimals
   decimals: BigInt!
+  # derived price in ETH
+  derivedETH: BigDecimal!
+  # pools token is in that are white listed for USD pricing
+  whitelistPools: [Pool!]!
 }
 
 type Pool @entity {
@@ -25,6 +29,16 @@ type Pool @entity {
   token0: Token!
   # token1
   token1: Token!
+  # token0 per token1
+  token0Price: BigDecimal!
+  # token1 per token0
+  token1Price: BigDecimal!
+  # tvl derived ETH
+  totalValueLockedETH: BigDecimal!
+  # total token 0 across all ticks
+  totalValueLockedToken0: BigDecimal!
+  # total token 1 across all ticks
+  totalValueLockedToken1: BigDecimal!
 }
 
 type Tick @entity {
@@ -44,4 +58,10 @@ type Tick @entity {
   price0: BigDecimal!
   # calculated price of token1 of tick within this pool - constant
   price1: BigDecimal!
+}
+
+type Bundle @entity {
+  id: ID!
+  # price of ETH in usd
+  ethPriceUSD: BigDecimal!
 }

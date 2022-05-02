@@ -6,7 +6,6 @@ import {
   Value,
   ValueKind,
   store,
-  Address,
   Bytes,
   BigInt,
   BigDecimal
@@ -16,26 +15,34 @@ export class Token extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("symbol", Value.fromString(""));
+    this.set("name", Value.fromString(""));
+    this.set("decimals", Value.fromBigInt(BigInt.zero()));
+    this.set("derivedETH", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("whitelistPools", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Token entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Token entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Token", id.toString(), this);
+    assert(id != null, "Cannot save Token entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Token entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Token", id.toString(), this);
+    }
   }
 
   static load(id: string): Token | null {
-    return store.get("Token", id) as Token | null;
+    return changetype<Token | null>(store.get("Token", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -44,7 +51,7 @@ export class Token extends Entity {
 
   get symbol(): string {
     let value = this.get("symbol");
-    return value.toString();
+    return value!.toString();
   }
 
   set symbol(value: string) {
@@ -53,7 +60,7 @@ export class Token extends Entity {
 
   get name(): string {
     let value = this.get("name");
-    return value.toString();
+    return value!.toString();
   }
 
   set name(value: string) {
@@ -62,11 +69,29 @@ export class Token extends Entity {
 
   get decimals(): BigInt {
     let value = this.get("decimals");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set decimals(value: BigInt) {
     this.set("decimals", Value.fromBigInt(value));
+  }
+
+  get derivedETH(): BigDecimal {
+    let value = this.get("derivedETH");
+    return value!.toBigDecimal();
+  }
+
+  set derivedETH(value: BigDecimal) {
+    this.set("derivedETH", Value.fromBigDecimal(value));
+  }
+
+  get whitelistPools(): Array<string> {
+    let value = this.get("whitelistPools");
+    return value!.toStringArray();
+  }
+
+  set whitelistPools(value: Array<string>) {
+    this.set("whitelistPools", Value.fromStringArray(value));
   }
 }
 
@@ -74,26 +99,40 @@ export class Pool extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("tick", Value.fromBigInt(BigInt.zero()));
+    this.set("feeTier", Value.fromBigInt(BigInt.zero()));
+    this.set("sqrtPrice", Value.fromBigInt(BigInt.zero()));
+    this.set("liquidity", Value.fromBigInt(BigInt.zero()));
+    this.set("token0", Value.fromString(""));
+    this.set("token1", Value.fromString(""));
+    this.set("token0Price", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("token1Price", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("totalValueLockedETH", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("totalValueLockedToken0", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("totalValueLockedToken1", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Pool entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Pool entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Pool", id.toString(), this);
+    assert(id != null, "Cannot save Pool entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Pool entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Pool", id.toString(), this);
+    }
   }
 
   static load(id: string): Pool | null {
-    return store.get("Pool", id) as Pool | null;
+    return changetype<Pool | null>(store.get("Pool", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -102,7 +141,7 @@ export class Pool extends Entity {
 
   get tick(): BigInt {
     let value = this.get("tick");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set tick(value: BigInt) {
@@ -111,7 +150,7 @@ export class Pool extends Entity {
 
   get feeTier(): BigInt {
     let value = this.get("feeTier");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set feeTier(value: BigInt) {
@@ -120,7 +159,7 @@ export class Pool extends Entity {
 
   get sqrtPrice(): BigInt {
     let value = this.get("sqrtPrice");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set sqrtPrice(value: BigInt) {
@@ -129,7 +168,7 @@ export class Pool extends Entity {
 
   get liquidity(): BigInt {
     let value = this.get("liquidity");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set liquidity(value: BigInt) {
@@ -138,7 +177,7 @@ export class Pool extends Entity {
 
   get token0(): string {
     let value = this.get("token0");
-    return value.toString();
+    return value!.toString();
   }
 
   set token0(value: string) {
@@ -147,11 +186,56 @@ export class Pool extends Entity {
 
   get token1(): string {
     let value = this.get("token1");
-    return value.toString();
+    return value!.toString();
   }
 
   set token1(value: string) {
     this.set("token1", Value.fromString(value));
+  }
+
+  get token0Price(): BigDecimal {
+    let value = this.get("token0Price");
+    return value!.toBigDecimal();
+  }
+
+  set token0Price(value: BigDecimal) {
+    this.set("token0Price", Value.fromBigDecimal(value));
+  }
+
+  get token1Price(): BigDecimal {
+    let value = this.get("token1Price");
+    return value!.toBigDecimal();
+  }
+
+  set token1Price(value: BigDecimal) {
+    this.set("token1Price", Value.fromBigDecimal(value));
+  }
+
+  get totalValueLockedETH(): BigDecimal {
+    let value = this.get("totalValueLockedETH");
+    return value!.toBigDecimal();
+  }
+
+  set totalValueLockedETH(value: BigDecimal) {
+    this.set("totalValueLockedETH", Value.fromBigDecimal(value));
+  }
+
+  get totalValueLockedToken0(): BigDecimal {
+    let value = this.get("totalValueLockedToken0");
+    return value!.toBigDecimal();
+  }
+
+  set totalValueLockedToken0(value: BigDecimal) {
+    this.set("totalValueLockedToken0", Value.fromBigDecimal(value));
+  }
+
+  get totalValueLockedToken1(): BigDecimal {
+    let value = this.get("totalValueLockedToken1");
+    return value!.toBigDecimal();
+  }
+
+  set totalValueLockedToken1(value: BigDecimal) {
+    this.set("totalValueLockedToken1", Value.fromBigDecimal(value));
   }
 }
 
@@ -159,26 +243,36 @@ export class Tick extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("poolAddress", Value.fromString(""));
+    this.set("tickIdx", Value.fromBigInt(BigInt.zero()));
+    this.set("pool", Value.fromString(""));
+    this.set("liquidityGross", Value.fromBigInt(BigInt.zero()));
+    this.set("liquidityNet", Value.fromBigInt(BigInt.zero()));
+    this.set("price0", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("price1", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Tick entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Tick entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Tick", id.toString(), this);
+    assert(id != null, "Cannot save Tick entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Tick entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Tick", id.toString(), this);
+    }
   }
 
   static load(id: string): Tick | null {
-    return store.get("Tick", id) as Tick | null;
+    return changetype<Tick | null>(store.get("Tick", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -187,7 +281,7 @@ export class Tick extends Entity {
 
   get poolAddress(): string {
     let value = this.get("poolAddress");
-    return value.toString();
+    return value!.toString();
   }
 
   set poolAddress(value: string) {
@@ -196,7 +290,7 @@ export class Tick extends Entity {
 
   get tickIdx(): BigInt {
     let value = this.get("tickIdx");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set tickIdx(value: BigInt) {
@@ -205,7 +299,7 @@ export class Tick extends Entity {
 
   get pool(): string {
     let value = this.get("pool");
-    return value.toString();
+    return value!.toString();
   }
 
   set pool(value: string) {
@@ -214,7 +308,7 @@ export class Tick extends Entity {
 
   get liquidityGross(): BigInt {
     let value = this.get("liquidityGross");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set liquidityGross(value: BigInt) {
@@ -223,7 +317,7 @@ export class Tick extends Entity {
 
   get liquidityNet(): BigInt {
     let value = this.get("liquidityNet");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set liquidityNet(value: BigInt) {
@@ -232,7 +326,7 @@ export class Tick extends Entity {
 
   get price0(): BigDecimal {
     let value = this.get("price0");
-    return value.toBigDecimal();
+    return value!.toBigDecimal();
   }
 
   set price0(value: BigDecimal) {
@@ -241,10 +335,54 @@ export class Tick extends Entity {
 
   get price1(): BigDecimal {
     let value = this.get("price1");
-    return value.toBigDecimal();
+    return value!.toBigDecimal();
   }
 
   set price1(value: BigDecimal) {
     this.set("price1", Value.fromBigDecimal(value));
+  }
+}
+
+export class Bundle extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("ethPriceUSD", Value.fromBigDecimal(BigDecimal.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Bundle entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Bundle entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Bundle", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Bundle | null {
+    return changetype<Bundle | null>(store.get("Bundle", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get ethPriceUSD(): BigDecimal {
+    let value = this.get("ethPriceUSD");
+    return value!.toBigDecimal();
+  }
+
+  set ethPriceUSD(value: BigDecimal) {
+    this.set("ethPriceUSD", Value.fromBigDecimal(value));
   }
 }

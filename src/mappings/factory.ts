@@ -1,5 +1,5 @@
 import { PoolCreated } from "../types/Factory/Factory";
-import { Pool, Token } from "../types/schema";
+import { Bundle, Pool, Token } from "../types/schema";
 import { Pool as PoolTemplate } from "../types/templates";
 import { ZERO_BI } from "./../utils/constants";
 import { log, BigInt } from "@graphprotocol/graph-ts";
@@ -8,6 +8,7 @@ import {
   fetchTokenName,
   fetchTokenDecimals,
 } from "../utils/token";
+import * as constants from '../utils/constants'
 
 export function handlePoolCreated(event: PoolCreated): void {
   let pool = new Pool(event.params.pool.toHexString()) as Pool;
@@ -48,6 +49,11 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.feeTier = BigInt.fromI32(event.params.fee);
   pool.liquidity = ZERO_BI;
   pool.sqrtPrice = ZERO_BI;
+
+  // create new bundle for tracking eth price
+  let bundle = new Bundle('1')
+  bundle.ethPriceUSD = constants.ZERO_BD
+  bundle.save()
 
   pool.save();
   // create the tracked contract based on the template
