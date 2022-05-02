@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { ONE_BD, ZERO_BD, ZERO_BI } from "./constants";
 import { Bundle, Pool, Token } from "./../types/schema";
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import { exponentToBigDecimal, safeDiv } from "../utils/index";
 import * as constants from "./constants";
 
@@ -45,7 +45,7 @@ let STABLE_COINS: string[] = [
 
 let MINIMUM_ETH_LOCKED = BigDecimal.fromString("52");
 
-let Q192 = 2 ** 192;
+let Q192 = BigInt.fromI32(2).pow(192);
 export function sqrtPriceX96ToTokenPrices(
   sqrtPriceX96: BigInt,
   token0: Token,
@@ -93,7 +93,10 @@ export function findEthPerToken(token: Token): BigDecimal {
   // if whitelist includes token - get the safe price
   if (STABLE_COINS.includes(token.id)) {
     priceSoFar = safeDiv(ONE_BD, bundle.ethPriceUSD);
+    log.warning("ethPriceUSD value-findEthPerToken {} ",[bundle.ethPriceUSD.toString()])
+    log.warning("Value of pricesofar-findEthPerToken {} ",[priceSoFar.toString()])
   } else {
+    log.warning("Inside else loop of findEthPerToken",[])
     for (let i = 0; i < whiteList.length; ++i) {
       let poolAddress = whiteList[i];
       let pool = Pool.load(poolAddress);

@@ -51,9 +51,12 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.sqrtPrice = ZERO_BI;
 
   // create new bundle for tracking eth price
-  let bundle = new Bundle('1')
-  bundle.ethPriceUSD = constants.ZERO_BD
-  bundle.save()
+  let bundle = Bundle.load('1')
+  if (!bundle) {
+    bundle = new Bundle('1')
+    bundle.ethPriceUSD = constants.ZERO_BD
+    bundle.save()
+  }
 
   pool.save();
   // create the tracked contract based on the template

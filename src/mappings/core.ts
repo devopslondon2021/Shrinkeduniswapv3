@@ -9,7 +9,7 @@ import {
 } from "../types/templates/Pool/Pool";
 import { createTick } from "../utils/tick";
 import { convertTokenToDecimal } from "../utils";
-import { findEthPerToken, getEthPriceInUSD } from "../utils/pricing";
+import { findEthPerToken, getEthPriceInUSD, sqrtPriceX96ToTokenPrices } from "../utils/pricing";
 
 export function handleInitialize(event: Initialize): void {
   // update pool sqrt price and tick
@@ -23,17 +23,8 @@ export function handleInitialize(event: Initialize): void {
   pool.tick = BigInt.fromI32(event.params.tick);
   // update token prices
   // update token prices
-  let token0 = Token.load(pool.token0)
-
-  if (!token0) {
-    return
-  }
-
-  let token1 = Token.load(pool.token1)
-  if (!token1) {
-    return
-  }
-
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
   token0.derivedETH = findEthPerToken(token0 as Token)
   token1.derivedETH = findEthPerToken(token1 as Token)
   
@@ -44,8 +35,9 @@ export function handleInitialize(event: Initialize): void {
     return
   }
   bundle.ethPriceUSD = getEthPriceInUSD()
-  bundle.save()
-
+  bundle.save();
+  token0.save();
+  token1.save();
   pool.save();
 }
 
@@ -112,6 +104,8 @@ export function handleMint(event: MintEvent): void {
   pool.totalValueLockedETH = pool.totalValueLockedToken0
     .times(token0.derivedETH)
 
+  lowerTick.save();
+  upperTick.save();
   token0.save();
   token1.save();
   pool.save();
@@ -168,6 +162,8 @@ export function handleBurn(event: BurnEvent): void {
   pool.totalValueLockedETH = pool.totalValueLockedToken0
     .times(token0.derivedETH)
 
+  lowerTick.save();
+  upperTick.save();
   token0.save();
   token1.save();
   pool.save();
@@ -203,6 +199,11 @@ export function handleSwap(event: SwapEvent): void {
     .times(token0.derivedETH)
     .plus(pool.totalValueLockedToken1.times(token1.derivedETH))
 
+  // updated pool ratess
+  let prices = sqrtPriceX96ToTokenPrices(pool.sqrtPrice, token0 as Token, token1 as Token)
+  pool.token0Price = prices[0]
+  pool.token1Price = prices[1]
+  
   pool.save();
   token0.save();
   token1.save();
