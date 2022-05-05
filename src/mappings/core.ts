@@ -80,13 +80,13 @@ export function handleMint(event: MintEvent): void {
     poolAddress + "#" + BigInt.fromI32(event.params.tickUpper).toString();
 
   let lowerTick = Tick.load(lowerTickId);
-  if (!lowerTick) {
-    return
-  }
+  // if (!lowerTick) {
+  //   return
+  // }
   let upperTick = Tick.load(upperTickId);
-  if (!upperTick) {
-    return
-  }
+  // if (!upperTick) {
+  //   return
+  // }
 
   if (lowerTick === null) {
     lowerTick = createTick(lowerTickId, lowerTickIdx, pool.id, event);
