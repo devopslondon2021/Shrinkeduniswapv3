@@ -21,6 +21,8 @@ export function createTick(tickId: string, tickIdx: i32, poolId: string, event: 
   let price0 = bigDecimalExponated(BigDecimal.fromString('1.0001'), BigInt.fromI32(tickIdx))
   tick.price0 = price0
   tick.price1 = safeDiv(ONE_BD, price0)
+
+  tick.save()
   return tick
 }
 
